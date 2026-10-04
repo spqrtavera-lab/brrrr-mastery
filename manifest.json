@@ -1,13 +1,24 @@
 {
-  "name": "Tavera Legacy BRRRR Mastery",
-  "short_name": "BRRRR",
-  "start_url": "./",
-  "scope": "./",
-  "display": "standalone",
-  "background_color": "#121212",
-  "theme_color": "#121212",
-  "icons": [
-    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
-    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"}
-  ]
+ "name": "The Wealth Bible",
+ "short_name": "Wealth Bible",
+ "description": "BRRRR real estate investor study system",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#121212",
+ "theme_color": "#121212",
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any maskable"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any maskable"
+  }
+ ]
 }
