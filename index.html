@@ -1,0 +1,1341 @@
+<title>BRRRR Mastery</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+<style>
+/* =====================================================================
+   TAVERA LEGACY INVESTMENTS — BRRRR MASTERY APP
+   Layout: Tab-based SPA with 30-day curriculum, flashcards, calculator
+   ===================================================================== */
+:root {
+  --bg:       #121212;
+  --panel:    #1A1A1A;
+  --card:     #202020;
+  --border:   #303030;
+  --green:    #39FF14;
+  --green2:   #59E44D;
+  --orange:   #F4A300;
+  --red:      #FF4D4F;
+  --blue:     #3B82F6;
+  --white:    #FFFFFF;
+  --gray-l:   #D1D5DB;
+  --gray-m:   #9CA3AF;
+  --gray-d:   #4B5563;
+  --success:  #22C55E;
+  color-scheme: dark;
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+}
+/* Force dark — this app is dark-first by brand design */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: var(--bg); color: var(--white); }
+body { display: flex; flex-direction: column; font-size: 15px; line-height: 1.5; overflow-x: hidden; }
+
+/* ── TOP BAR ── */
+.topbar {
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 100;
+  flex-shrink: 0;
+}
+.topbar-logo { display: flex; align-items: center; gap: 8px; }
+.logo-t {
+  width: 32px; height: 32px; background: var(--green);
+  border-radius: 6px; display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 18px; color: #000; flex-shrink: 0;
+}
+.logo-text { line-height: 1.1; }
+.logo-text .brand { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: var(--white); }
+.logo-text .sub   { font-size: 10px; font-weight: 500; letter-spacing: 0.06em; color: var(--green); text-transform: uppercase; }
+.topbar-day { font-size: 12px; color: var(--gray-m); }
+.topbar-day span { color: var(--green); font-weight: 700; }
+
+/* ── NAV TABS ── */
+.navtabs {
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  display: flex; overflow-x: auto; flex-shrink: 0;
+  scrollbar-width: none;
+}
+.navtabs::-webkit-scrollbar { display: none; }
+.navtab {
+  padding: 10px 16px; font-size: 13px; font-weight: 500; color: var(--gray-m);
+  border: none; background: none; cursor: pointer; white-space: nowrap;
+  border-bottom: 2px solid transparent; transition: all .15s;
+  letter-spacing: 0.02em;
+}
+.navtab:hover { color: var(--white); }
+.navtab.active { color: var(--green); border-bottom-color: var(--green); }
+
+/* ── CONTENT AREA ── */
+.content { flex: 1; overflow-y: auto; padding: 16px; display: none; }
+.content.active { display: block; }
+
+/* ── UTILITY ── */
+h2 { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+h3 { font-size: 15px; font-weight: 600; }
+.section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--green); margin-bottom: 12px;
+}
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px; margin-bottom: 12px;
+}
+.card-sm { padding: 12px; margin-bottom: 8px; }
+.pill {
+  display: inline-block; font-size: 11px; font-weight: 600;
+  padding: 2px 8px; border-radius: 100px; letter-spacing: 0.04em;
+}
+.pill-green { background: rgba(57,255,20,.15); color: var(--green); }
+.pill-orange { background: rgba(244,163,0,.15); color: var(--orange); }
+.pill-blue { background: rgba(59,130,246,.15); color: var(--blue); }
+.pill-gray { background: var(--border); color: var(--gray-m); }
+.row { display: flex; gap: 10px; }
+.row > * { flex: 1; min-width: 0; }
+.stat-box {
+  background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+  padding: 12px; text-align: center;
+}
+.stat-box .num { font-size: 22px; font-weight: 800; color: var(--green); font-variant-numeric: tabular-nums; }
+.stat-box .lbl { font-size: 10px; color: var(--gray-m); margin-top: 2px; letter-spacing: 0.05em; text-transform: uppercase; }
+.divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+.tag { display: inline-block; padding: 2px 6px; font-size: 10px; border-radius: 4px; font-weight: 600; }
+.tag-phase { background: rgba(57,255,20,.12); color: var(--green); letter-spacing: 0.04em; }
+
+/* ── PROGRESS BAR ── */
+.progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin: 8px 0; }
+.progress-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width .3s; }
+
+/* ── CURRICULUM / DAY GRID ── */
+.day-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 6px; margin-bottom: 16px; }
+.day-btn {
+  aspect-ratio: 1; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--card); font-size: 12px; font-weight: 600;
+  color: var(--gray-m); cursor: pointer; transition: all .15s;
+  display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 2px;
+}
+.day-btn .d { font-size: 10px; font-weight: 500; color: var(--gray-d); }
+.day-btn:hover { border-color: var(--green); color: var(--white); }
+.day-btn.done { background: rgba(57,255,20,.1); border-color: rgba(57,255,20,.3); color: var(--green); }
+.day-btn.today { border-color: var(--green); color: var(--white); background: rgba(57,255,20,.08); box-shadow: 0 0 0 1px var(--green); }
+.day-btn.locked { opacity: .4; cursor: default; }
+
+.day-detail { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+.day-detail h3 { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+.day-detail .meta { font-size: 12px; color: var(--gray-m); margin-bottom: 12px; }
+.lesson-block { margin-bottom: 14px; }
+.lesson-block h4 { font-size: 13px; font-weight: 600; color: var(--green); margin-bottom: 6px; }
+.lesson-block p, .lesson-block li { font-size: 13px; color: var(--gray-l); line-height: 1.6; }
+.lesson-block ul { padding-left: 18px; }
+.lesson-block li { margin-bottom: 4px; }
+.formula-box {
+  background: var(--panel); border: 1px solid var(--border); border-radius: 8px;
+  padding: 12px 14px; font-family: 'Courier New', monospace; font-size: 13px;
+  color: var(--green); margin: 8px 0;
+}
+.complete-btn {
+  width: 100%; padding: 12px; border-radius: 8px; border: none;
+  background: var(--green); color: #000; font-size: 14px; font-weight: 700;
+  cursor: pointer; margin-top: 14px; transition: opacity .15s; letter-spacing: 0.03em;
+}
+.complete-btn:hover { opacity: .9; }
+.complete-btn.done { background: var(--gray-d); color: var(--gray-m); cursor: default; }
+
+/* ── FLASHCARDS ── */
+.fc-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.fc-counter { font-size: 13px; color: var(--gray-m); }
+.fc-deck-select {
+  background: var(--card); border: 1px solid var(--border); border-radius: 6px;
+  padding: 6px 10px; color: var(--white); font-size: 13px; font-family: inherit;
+}
+.fc-card-wrap { perspective: 1000px; height: 220px; margin-bottom: 16px; cursor: pointer; }
+.fc-card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform .45s; }
+.fc-card.flipped { transform: rotateY(180deg); }
+.fc-face {
+  position: absolute; inset: 0; backface-visibility: hidden;
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 20px; text-align: center;
+}
+.fc-face.back { transform: rotateY(180deg); border-color: rgba(57,255,20,.3); }
+.fc-q { font-size: 15px; font-weight: 600; color: var(--white); line-height: 1.4; }
+.fc-a { font-size: 14px; color: var(--green); line-height: 1.5; font-weight: 500; }
+.fc-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 10px; }
+.fc-label.q { color: var(--gray-d); }
+.fc-label.a { color: var(--green); }
+.fc-hint { font-size: 11px; color: var(--gray-d); margin-top: 6px; }
+.fc-actions { display: flex; gap: 8px; }
+.fc-btn {
+  flex: 1; padding: 12px 8px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--card); color: var(--white); font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all .15s; font-family: inherit;
+}
+.fc-btn:hover { border-color: var(--gray-m); }
+.fc-btn.know { border-color: var(--success); color: var(--success); }
+.fc-btn.know:hover { background: rgba(34,197,94,.1); }
+.fc-btn.skip { border-color: var(--red); color: var(--red); }
+.fc-btn.skip:hover { background: rgba(255,77,79,.1); }
+.fc-btn.flip { border-color: var(--blue); color: var(--blue); }
+.fc-btn.flip:hover { background: rgba(59,130,246,.1); }
+.fc-score { display: flex; gap: 8px; margin-top: 12px; }
+.fc-score .s { text-align: center; flex: 1; font-size: 13px; }
+.fc-score .s .n { font-size: 20px; font-weight: 800; }
+.fc-score .s .l { font-size: 10px; color: var(--gray-m); letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* ── CALCULATOR ── */
+.calc-section { margin-bottom: 16px; }
+.calc-label { font-size: 11px; font-weight: 600; color: var(--gray-m); margin-bottom: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
+.calc-input {
+  width: 100%; padding: 10px 12px; background: var(--card); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--white); font-size: 15px; font-family: inherit;
+  transition: border-color .15s; font-variant-numeric: tabular-nums;
+}
+.calc-input:focus { outline: none; border-color: var(--green); }
+.calc-input::-webkit-inner-spin-button { display: none; }
+.result-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.result-row:last-child { border-bottom: none; }
+.result-row .lbl { font-size: 13px; color: var(--gray-m); }
+.result-row .val { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.result-row .val.good { color: var(--success); }
+.result-row .val.warn { color: var(--orange); }
+.result-row .val.bad  { color: var(--red); }
+.verdict {
+  margin-top: 12px; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: 600; text-align: center;
+}
+.verdict.pass { background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.3); color: var(--success); }
+.verdict.warn { background: rgba(244,163,0,.12); border: 1px solid rgba(244,163,0,.3); color: var(--orange); }
+.verdict.fail { background: rgba(255,77,79,.12); border: 1px solid rgba(255,77,79,.3); color: var(--red); }
+
+.slider-wrap { position: relative; }
+input[type=range] { width: 100%; accent-color: var(--green); margin: 4px 0; cursor: pointer; }
+
+/* ── QUIZ ── */
+.quiz-q { font-size: 16px; font-weight: 600; line-height: 1.4; margin-bottom: 16px; }
+.quiz-opts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.quiz-opt {
+  padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--card); cursor: pointer; font-size: 14px; transition: all .15s;
+  text-align: left; font-family: inherit; color: var(--white);
+}
+.quiz-opt:hover { border-color: var(--gray-m); }
+.quiz-opt.selected { border-color: var(--blue); background: rgba(59,130,246,.12); }
+.quiz-opt.correct { border-color: var(--success); background: rgba(34,197,94,.12); color: var(--success); }
+.quiz-opt.wrong { border-color: var(--red); background: rgba(255,77,79,.12); color: var(--red); }
+.quiz-explain { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 13px; color: var(--gray-l); margin-bottom: 14px; }
+.quiz-explain strong { color: var(--white); }
+.quiz-nav { display: flex; justify-content: space-between; align-items: center; }
+.btn-primary {
+  padding: 10px 20px; border-radius: 8px; border: none; background: var(--green);
+  color: #000; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
+  transition: opacity .15s;
+}
+.btn-primary:hover { opacity: .9; }
+.btn-ghost {
+  padding: 10px 20px; border-radius: 8px; border: 1px solid var(--border);
+  color: var(--gray-m); font-size: 14px; background: none; cursor: pointer; font-family: inherit;
+  transition: all .15s;
+}
+.btn-ghost:hover { border-color: var(--gray-m); color: var(--white); }
+.quiz-score-big { text-align: center; padding: 24px; }
+.quiz-score-big .pct { font-size: 64px; font-weight: 800; color: var(--green); line-height: 1; }
+.quiz-score-big .grade { font-size: 14px; color: var(--gray-m); margin-top: 4px; }
+
+/* ── INCOME CALC ── */
+.income-row { margin-bottom: 12px; }
+.income-result { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-top: 14px; }
+.income-result .headline { font-size: 22px; font-weight: 800; color: var(--green); margin-bottom: 8px; font-variant-numeric: tabular-nums; }
+.income-result .detail { font-size: 13px; color: var(--gray-l); line-height: 1.6; }
+
+/* ── RESOURCES ── */
+.resource-item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 8px; }
+.resource-item .title { font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 2px; }
+.resource-item .url { font-size: 12px; color: var(--blue); }
+.resource-item .desc { font-size: 13px; color: var(--gray-m); margin-top: 4px; line-height: 1.4; }
+
+/* ── SCRIPTS ── */
+.script-block { background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+.script-header { padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; border-bottom: 1px solid var(--border); }
+.script-header h4 { font-size: 14px; font-weight: 600; }
+.script-header .arr { color: var(--gray-d); transition: transform .2s; font-size: 12px; }
+.script-header.open .arr { transform: rotate(180deg); color: var(--green); }
+.script-body { padding: 14px; display: none; font-size: 13px; color: var(--gray-l); line-height: 1.7; }
+.script-body.open { display: block; }
+.speaker { font-weight: 700; color: var(--white); }
+.speaker.you { color: var(--green); }
+.speaker.them { color: var(--orange); }
+
+/* ── DAILY PRINT SHEET ── */
+.print-sheet { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 12px; }
+.print-sheet .ps-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.print-sheet h3 { font-size: 15px; font-weight: 700; }
+.checkbox-row { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.checkbox-row:last-child { border-bottom: none; }
+.cb { width: 16px; height: 16px; border: 2px solid var(--border); border-radius: 4px; flex-shrink: 0; margin-top: 2px; cursor: pointer; transition: all .15s; position: relative; }
+.cb.checked { background: var(--green); border-color: var(--green); }
+.cb.checked::after { content: '✓'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #000; font-weight: 800; }
+.cb-label { font-size: 13px; color: var(--gray-l); }
+.notes-area {
+  width: 100%; margin-top: 10px; padding: 10px; background: var(--panel);
+  border: 1px solid var(--border); border-radius: 6px; color: var(--white);
+  font-size: 13px; font-family: inherit; resize: vertical; min-height: 80px;
+}
+.notes-area:focus { outline: none; border-color: var(--green); }
+
+/* ── RESPONSIVE ── */
+@media(max-width:460px) {
+  .day-grid { grid-template-columns: repeat(5,1fr); gap: 4px; }
+  .day-btn { font-size: 11px; }
+  .fc-card-wrap { height: 200px; }
+  .row { flex-direction: column; }
+}
+</style>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <div class="logo-t">T</div>
+    <div class="logo-text">
+      <div class="brand">TAVERA LEGACY</div>
+      <div class="sub">BRRRR Mastery</div>
+    </div>
+  </div>
+  <div class="topbar-day">Day <span id="currentDayLabel">1</span> of 30</div>
+</div>
+
+<!-- NAV TABS -->
+<nav class="navtabs">
+  <button class="navtab active" onclick="switchTab('curriculum')">📅 Curriculum</button>
+  <button class="navtab" onclick="switchTab('flashcards')">🃏 Flashcards</button>
+  <button class="navtab" onclick="switchTab('calculator')">🧮 Deal Calc</button>
+  <button class="navtab" onclick="switchTab('quiz')">✅ Quiz</button>
+  <button class="navtab" onclick="switchTab('income')">💰 Income Calc</button>
+  <button class="navtab" onclick="switchTab('scripts')">📞 Scripts</button>
+  <button class="navtab" onclick="switchTab('resources')">🗂 Resources</button>
+  <button class="navtab" onclick="switchTab('daily')">📋 Daily Sheet</button>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB: CURRICULUM
+══════════════════════════════════════════════════════ -->
+<div id="tab-curriculum" class="content active">
+  <div class="section-label">30-Day Program</div>
+
+  <div class="row" style="margin-bottom:14px">
+    <div class="stat-box">
+      <div class="num" id="daysCompleted">0</div>
+      <div class="lbl">Completed</div>
+    </div>
+    <div class="stat-box">
+      <div class="num" id="daysRemaining">30</div>
+      <div class="lbl">Remaining</div>
+    </div>
+    <div class="stat-box">
+      <div class="num" id="streakCount">0</div>
+      <div class="lbl">Streak 🔥</div>
+    </div>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="currProgress" style="width:0%"></div></div>
+  <p style="font-size:12px;color:var(--gray-d);margin-bottom:14px" id="currPct">0% complete</p>
+
+  <div class="day-grid" id="dayGrid"></div>
+  <div class="day-detail" id="dayDetail"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB: FLASHCARDS
+══════════════════════════════════════════════════════ -->
+<div id="tab-flashcards" class="content">
+  <div class="fc-meta">
+    <div class="section-label" style="margin:0">Flashcards</div>
+    <select class="fc-deck-select" id="deckSelect" onchange="loadDeck()">
+      <option value="formulas">Formulas & Math</option>
+      <option value="exit">Exit Strategies</option>
+      <option value="sources">Data Sources</option>
+      <option value="terms">Key Terms</option>
+    </select>
+  </div>
+
+  <div class="fc-counter" id="fcCounter" style="margin-bottom:10px;font-size:12px;color:var(--gray-m)"></div>
+
+  <div class="fc-card-wrap" onclick="flipCard()" id="fcWrap">
+    <div class="fc-card" id="fcCard">
+      <div class="fc-face front" id="fcFront">
+        <div class="fc-label q">Question</div>
+        <div class="fc-q" id="fcQ">Tap to start</div>
+        <div class="fc-hint">Tap card to reveal answer</div>
+      </div>
+      <div class="fc-face back" id="fcBack">
+        <div class="fc-label a">Answer</div>
+        <div class="fc-a" id="fcA"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fc-actions">
+    <button class="fc-btn skip" onclick="markCard(false)">✗ Review</button>
+    <button class="fc-btn flip" onclick="flipCard()">↩ Flip</button>
+    <button class="fc-btn know" onclick="markCard(true)">✓ Know It</button>
+  </div>
+
+  <div class="fc-score" style="margin-top:14px">
+    <div class="s"><div class="n" id="fcKnow" style="color:var(--success)">0</div><div class="l">Know</div></div>
+    <div class="s"><div class="n" id="fcTotal" style="color:var(--gray-m)">0</div><div class="l">Seen</div></div>
+    <div class="s"><div class="n" id="fcReview" style="color:var(--red)">0</div><div class="l">Review</div></div>
+  </div>
+
+  <button class="btn-ghost" style="width:100%;margin-top:12px" onclick="restartDeck()">↺ Restart Deck</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB: DEAL CALCULATOR
+══════════════════════════════════════════════════════ -->
+<div id="tab-calculator" class="content">
+  <div class="section-label">BRRRR Deal Analyzer</div>
+
+  <div class="card">
+    <div class="calc-section">
+      <div class="calc-label">After Repair Value (ARV) $</div>
+      <input type="number" class="calc-input" id="c_arv" placeholder="150000" oninput="calcDeal()">
+    </div>
+    <div class="calc-section">
+      <div class="calc-label">Estimated Rehab Cost $</div>
+      <input type="number" class="calc-input" id="c_rehab" placeholder="30000" oninput="calcDeal()">
+    </div>
+    <div class="calc-section">
+      <div class="calc-label">Purchase Price $</div>
+      <input type="number" class="calc-input" id="c_price" placeholder="70000" oninput="calcDeal()">
+    </div>
+    <div class="calc-section">
+      <div class="calc-label">Monthly Rent $</div>
+      <input type="number" class="calc-input" id="c_rent" placeholder="1400" oninput="calcDeal()">
+    </div>
+    <div class="calc-section">
+      <div class="calc-label">Refi Rate %</div>
+      <input type="number" class="calc-input" id="c_rate" placeholder="7.5" step="0.1" oninput="calcDeal()">
+    </div>
+    <div class="calc-section">
+      <div class="calc-label">Refi Term (years)</div>
+      <input type="number" class="calc-input" id="c_term" placeholder="30" oninput="calcDeal()">
+    </div>
+    <div class="calc-section">
+      <div class="calc-label">Monthly Expenses (taxes+ins+prop mgmt) $</div>
+      <input type="number" class="calc-input" id="c_exp" placeholder="300" oninput="calcDeal()">
+    </div>
+  </div>
+
+  <div class="card" id="calcResults" style="display:none">
+    <div class="section-label">Results</div>
+    <div class="result-row"><span class="lbl">MAO (70% Rule)</span><span class="val" id="r_mao">—</span></div>
+    <div class="result-row"><span class="lbl">All-In Cost</span><span class="val" id="r_allin">—</span></div>
+    <div class="result-row"><span class="lbl">All-In % of ARV</span><span class="val" id="r_allinpct">—</span></div>
+    <div class="result-row"><span class="lbl">Cash-Out Refi (75% LTV)</span><span class="val" id="r_refi">—</span></div>
+    <div class="result-row"><span class="lbl">Equity Remaining</span><span class="val" id="r_equity">—</span></div>
+    <div class="result-row"><span class="lbl">Refi Mortgage Payment</span><span class="val" id="r_mortgage">—</span></div>
+    <div class="result-row"><span class="lbl">Monthly Cash Flow</span><span class="val" id="r_cf">—</span></div>
+    <div class="result-row"><span class="lbl">Annual Cash Flow</span><span class="val" id="r_acf">—</span></div>
+    <div class="result-row"><span class="lbl">DSCR</span><span class="val" id="r_dscr">—</span></div>
+    <div class="result-row"><span class="lbl">Cash Returned at Refi</span><span class="val" id="r_returned">—</span></div>
+    <div class="verdict" id="r_verdict"></div>
+  </div>
+
+  <div class="card" style="font-size:12px;color:var(--gray-m);line-height:1.7">
+    <strong style="color:var(--white)">Formula Reference:</strong><br>
+    MAO = (ARV × 70%) − Rehab<br>
+    All-In = Purchase + Rehab<br>
+    75% Rule: All-In ≤ 75% ARV<br>
+    Cash-Out Refi = ARV × 75%<br>
+    DSCR = Rent ÷ PITIA (≥1.25 preferred)<br>
+    Cash Flow = Rent − Mortgage − Expenses
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB: QUIZ
+══════════════════════════════════════════════════════ -->
+<div id="tab-quiz" class="content">
+  <div class="section-label">Knowledge Test</div>
+  <div id="quizArea"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB: INCOME CALCULATOR
+══════════════════════════════════════════════════════ -->
+<div id="tab-income" class="content">
+  <div class="section-label">Replace Your Income</div>
+
+  <div class="card">
+    <div class="income-row">
+      <div class="calc-label">Current Monthly Take-Home $</div>
+      <input type="number" class="calc-input" id="ic_salary" placeholder="5500" oninput="calcIncome()">
+    </div>
+    <div class="income-row">
+      <div class="calc-label">Average Monthly Cash Flow per Door $</div>
+      <input type="number" class="calc-input" id="ic_cf" placeholder="300" oninput="calcIncome()">
+    </div>
+    <div class="income-row">
+      <div class="calc-label">Average Deal Acquisition (months per deal)</div>
+      <input type="number" class="calc-input" id="ic_pace" placeholder="3" oninput="calcIncome()">
+    </div>
+  </div>
+
+  <div class="income-result" id="incomeResult" style="display:none">
+    <div class="headline" id="ic_doors">— doors needed</div>
+    <div class="detail" id="ic_detail"></div>
+  </div>
+
+  <div class="card" style="margin-top:12px">
+    <div class="section-label">The Path</div>
+    <div id="ic_timeline"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB: SCRIPTS
+══════════════════════════════════════════════════════ -->
+<div id="tab-scripts" class="content">
+  <div class="section-label">Call Scripts & Objections</div>
+  <div id="scriptsArea"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB: RESOURCES
+══════════════════════════════════════════════════════ -->
+<div id="tab-resources" class="content">
+  <div class="section-label">Data Sources & Tools</div>
+  <div id="resourcesArea"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB: DAILY SHEET
+══════════════════════════════════════════════════════ -->
+<div id="tab-daily" class="content">
+  <div class="section-label">Daily Practice Sheet</div>
+
+  <div class="print-sheet">
+    <div class="ps-header">
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.08em;color:var(--green);text-transform:uppercase">Tavera Legacy Investments</div>
+        <h3>BRRRR Daily Checklist</h3>
+      </div>
+      <input type="date" id="sheetDate" class="calc-input" style="width:auto;font-size:12px;padding:6px 8px">
+    </div>
+
+    <div class="section-label" style="margin-bottom:8px">📚 Study (15 min)</div>
+    <div id="studyChecks"></div>
+    <hr class="divider">
+    <div class="section-label" style="margin-bottom:8px">🔍 Prospecting (30 min)</div>
+    <div id="prospectChecks"></div>
+    <hr class="divider">
+    <div class="section-label" style="margin-bottom:8px">📞 Lead Follow-Up</div>
+    <div id="followChecks"></div>
+    <hr class="divider">
+    <div class="section-label" style="margin-bottom:8px">🧮 Deal Analysis</div>
+    <div id="dealChecks"></div>
+    <hr class="divider">
+    <div class="section-label" style="margin-bottom:8px">📝 Notes</div>
+    <textarea class="notes-area" placeholder="What did you learn today? Any leads? Deals analyzed?" id="dailyNotes"></textarea>
+    <div style="margin-top:8px">
+      <div class="calc-label">Formula I Practiced Today</div>
+      <input type="text" class="calc-input" placeholder="e.g. MAO = (ARV × 70%) − Rehab" id="formulaOfDay">
+    </div>
+  </div>
+
+  <button class="btn-primary" style="width:100%" onclick="saveDaily()">Save Today's Sheet</button>
+  <p style="font-size:12px;color:var(--gray-d);text-align:center;margin-top:8px">Saved locally on this device</p>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════════════════════
+
+const CURRICULUM = [
+  {
+    week: 1, title: "BRRRR Fundamentals",
+    days: [
+      { n:1, title:"What is BRRRR?", phase:"Foundation",
+        lessons:[
+          { h:"The BRRRR Framework", body:"BRRRR stands for Buy, Rehab, Rent, Refinance, Repeat. Unlike a flip, you keep the property and pull your equity out to fund the next deal. The goal: build a portfolio while recycling the same capital over and over." },
+          { h:"Why BRRRR Works", body:"Traditional rentals tie up cash permanently. BRRRR lets you put $50K into a deal and potentially recover $45–55K at refinance — leaving a rental producing cash flow with little to no money left in the deal." },
+          { h:"The 5 Phases", body: null, formula:"Buy → Rehab → Rent → Refinance → Repeat" }
+        ]
+      },
+      { n:2, title:"ARV — The North Star", phase:"Foundation",
+        lessons:[
+          { h:"After Repair Value (ARV)", body:"ARV is what the property will be worth AFTER all repairs are complete. It's the single most important number in every BRRRR deal. Everything else — your offer price, rehab budget, refi amount — is calculated from ARV." },
+          { h:"How to Find ARV", body:"Pull sold comps (not listed, SOLD) within 0.5 miles, same beds/baths/sqft, sold in last 90 days. Adjust up/down $5–10/sqft for condition differences. Use Zillow, PropStream, Realtor.com, MLS, or Redfin." },
+          { h:"ARV Formula", body: null, formula:"ARV = Average $ per sqft of comparable sales × Subject sqft" }
+        ]
+      },
+      { n:3, title:"MAO — Maximum Allowable Offer", phase:"Foundation",
+        lessons:[
+          { h:"The 70% Rule", body:"Never pay more than 70% of ARV minus rehab. This rule protects your equity cushion and ensures you can refinance and still pull cash out." },
+          { h:"MAO Formula", body: null, formula:"MAO = (ARV × 0.70) − Estimated Rehab" },
+          { h:"Example", body:"ARV $150K, Rehab $30K → MAO = ($150K × 0.70) − $30K = $105K − $30K = $75K. Anything over $75K is a bad deal." }
+        ]
+      },
+      { n:4, title:"Rehab Budgeting", phase:"Foundation",
+        lessons:[
+          { h:"Scope of Work (SOW)", body:"Never guess rehab costs. Walk the property with a contractor and price every line item: roof, HVAC, electrical, plumbing, flooring, kitchen, baths, paint, landscaping. Get 2–3 bids." },
+          { h:"Rehab Budget Categories", body:"Structural (foundation, roof, framing) · Mechanical (HVAC, electrical, plumbing) · Cosmetic (flooring, paint, fixtures, landscaping) · Safety (smoke detectors, water heater, egress)" },
+          { h:"Buffer Rule", body: null, formula:"Add 10–15% contingency to every rehab estimate" }
+        ]
+      },
+      { n:5, title:"The 75% Rule — Refi Math", phase:"Foundation",
+        lessons:[
+          { h:"Cash-Out Refinance", body:"After stabilizing (tenant in place, 6–12 months of seasoning depending on lender), you refinance at 75% LTV. The bank loans you 75% of ARV. You pay off your purchase loan and pocket the difference." },
+          { h:"75% Formula", body: null, formula:"Cash-Out = ARV × 0.75\nEquity Left = ARV − Cash-Out" },
+          { h:"All-In Rule", body: null, formula:"All-In (Purchase + Rehab) must be ≤ 75% ARV to break even or profit at refi" }
+        ]
+      },
+      { n:6, title:"Rental Income & DSCR", phase:"Foundation",
+        lessons:[
+          { h:"Market Rent", body:"Use Rentometer, Zillow rental listings, RentRange, or PropStream to verify what a rehabbed property in the area actually rents for. Use conservative (10th percentile) estimate, not best case." },
+          { h:"DSCR — Debt Service Coverage Ratio", body:"DSCR measures whether rent covers your mortgage. Most DSCR lenders require 1.20–1.25 or higher. A 1.25 DSCR means rent is 25% MORE than your total payment." },
+          { h:"DSCR Formula", body: null, formula:"DSCR = Gross Monthly Rent ÷ PITIA\n(PITIA = Principal + Interest + Taxes + Insurance + Association)" }
+        ]
+      },
+      { n:7, title:"Week 1 Review & Deal Practice", phase:"Foundation",
+        lessons:[
+          { h:"Week 1 Formulas — Memorize These", body: null, formula:"MAO = (ARV × 70%) − Rehab\nAll-In ≤ 75% ARV\nDSCR = Rent ÷ PITIA (target ≥ 1.25)\nCash-Out Refi = ARV × 75%" },
+          { h:"Practice Exercise", body:"Find a distressed property on Zillow in your market. Pull 3 sold comps. Estimate ARV. Estimate rehab. Calculate MAO. Would you make an offer?" }
+        ]
+      }
+    ]
+  },
+  {
+    week: 2, title: "Deal Analysis & Finding Deals",
+    days: [
+      { n:8, title:"Cash Flow Analysis", phase:"Analysis",
+        lessons:[
+          { h:"Monthly Cash Flow", body:"Cash flow = what you actually pocket every month after ALL expenses. Never just rent minus mortgage. Include: vacancy (5–8%), repairs (5%), property management (8–10%), taxes, insurance." },
+          { h:"Cash Flow Formula", body: null, formula:"CF = Rent − Mortgage − Tax − Insurance − PropMgmt − Vacancy − Repairs" },
+          { h:"Target", body: null, formula:"$200–$300/mo minimum cash flow per door (Polk County BRRRR)" }
+        ]
+      },
+      { n:9, title:"Deal Stacking & ROI", phase:"Analysis",
+        lessons:[
+          { h:"Cash-on-Cash Return", body:"CoC measures your annual cash flow against the cash you have LEFT in the deal after refinance. If you pulled all your cash out, CoC is infinite. If $5K left in, $3,600/yr flow, CoC = 72%." },
+          { h:"CoC Formula", body: null, formula:"CoC ROI = (Annual Cash Flow ÷ Cash Invested) × 100" },
+          { h:"Total Return", body: null, formula:"Total ROI includes: Cash Flow + Equity Capture + Appreciation + Loan Paydown + Tax Benefits" }
+        ]
+      },
+      { n:10, title:"Polk County Market Specifics", phase:"Analysis",
+        lessons:[
+          { h:"Lakeland / Polk County", body:"Strong rent-to-value ratios vs. Tampa/Orlando. Average 3BR rent $1,400–$1,700. Median sale price growing. Target: 3BR/2BA in $120–160K ARV range for best BRRRR numbers." },
+          { h:"Target Neighborhoods", body:"Focus on areas with recent SOLD comps above $130K ARV. Avoid areas where rent can't support DSCR ≥ 1.20. Check PropStream investor activity maps." },
+          { h:"Vacancy Rate", body: null, formula:"Polk County vacancy: ~5–7%. Use 6% in your model = 0.72 months/yr empty" }
+        ]
+      },
+      { n:11, title:"Finding Off-Market Deals", phase:"Acquisition",
+        lessons:[
+          { h:"Lead Sources", body:"Driving for Dollars (DealMachine), Direct Mail (postcards), MLS off-market/price reduction, Probate court records, Zillow FSBO, Facebook Marketplace, Wholesalers, Code violations/liens." },
+          { h:"Days on Market Strategy", body:"Properties 90+ DOM on Zillow = motivated seller. Filter Zillow for 'price reduced' + 200+ days. Reach out directly or through your Realtor license." },
+          { h:"Daily Prospecting Habit", body: null, formula:"10 leads outreached per day × 5 days/week = 200/month\nConversion: 1-2% = 2-4 deals per month in pipeline" }
+        ]
+      },
+      { n:12, title:"Distressed Property Indicators", phase:"Acquisition",
+        lessons:[
+          { h:"Signs of Motivated Sellers", body:"Deferred maintenance visible from street. Code violations on county website. Probate filings (check Polk County Clerk). Tax delinquency (2+ years). Pre-foreclosure / lis pendens filings. Divorce court records." },
+          { h:"Lead Scoring", body:"Tier 1 (hottest): Probate + Tax delinquent + Vacant. Tier 2: Code violations + 90+ DOM. Tier 3: Absentee owner + Out-of-state + Long-hold." },
+          { h:"Finding Records", body: null, formula:"polkcountyclerk.net → Probate, Lis Pendens\npolkpa.org → Property records, owner info\npropstream.com → All-in-one investor data" }
+        ]
+      },
+      { n:13, title:"Making Offers", phase:"Acquisition",
+        lessons:[
+          { h:"The Offer Formula", body:"Start at 65% ARV minus rehab for negotiation room. Your walk-away is 70% minus rehab (MAO). Always show your math to sellers — it builds trust and justifies the number." },
+          { h:"Letter of Intent vs Contract", body:"LOI: Non-binding, used to gauge interest before the full contract. Purchase & Sale Agreement: Legally binding. Include inspection period (10–15 days), financing contingency, assignment clause if wholesaling." },
+          { h:"Florida Contract Tip", body: null, formula:"As a licensed agent buying for yourself: disclose your license status in writing per FREC 61J2-10.025" }
+        ]
+      },
+      { n:14, title:"Week 2 Review — Deal Walkthrough", phase:"Analysis",
+        lessons:[
+          { h:"Full Deal Walkthrough", body:"Use the Deal Calculator tab to run this example: ARV $145K, Rehab $25K, Purchase $70K, Rent $1,350/mo, Rate 7.5%, Term 30yr, Expenses $275/mo. Does this deal work? What's your DSCR? Cash flow?" },
+          { h:"Answer Key", body: null, formula:"MAO = (145K×0.70)−25K = $76.5K ✓\nAll-In = $95K = 65.5% ARV ✓\nRefi = 145K×0.75 = $108.75K\nMortgage ≈ $761/mo\nCF = 1350 − 761 − 275 = $314/mo ✓" }
+        ]
+      }
+    ]
+  },
+  {
+    week: 3, title: "Financing, Exit Strategies & CRM",
+    days: [
+      { n:15, title:"BRRRR Financing Options", phase:"Financing",
+        lessons:[
+          { h:"Hard Money Lenders (HML)", body:"Short-term bridge loans, 10–14% interest, 2–4 points. Used to buy + fund rehab quickly. Lend based on ARV, not purchase price. Typical term: 6–12 months. Refinance them out with DSCR loan." },
+          { h:"Private Money", body:"From individuals (friends, family, passive investors). Can structure as mortgage or promissory note. Often cheaper than HML. Pay 8–10% interest only, secure with first position lien." },
+          { h:"DSCR Loans", body: null, formula:"DSCR Lender criteria: DSCR ≥ 1.20–1.25, 20–25% down (or LTV after refi), 680+ credit score. No W2 required — qualifies on rent income alone." }
+        ]
+      },
+      { n:16, title:"Subject-To & Seller Finance", phase:"Creative Finance",
+        lessons:[
+          { h:"Subject-To", body:"You take over the seller's existing mortgage 'subject to' the current loan staying in place. Deed transfers to you, but the loan stays in the seller's name. Works best with sellers facing foreclosure." },
+          { h:"Seller Financing", body:"Seller acts as the bank. You pay them monthly installments at agreed interest rate. No traditional lender. Great for sellers who own free and clear or need cash flow vs. lump sum." },
+          { h:"Note on Legality", body: null, formula:"Sub-To: Legal in Florida. Always disclose to seller. Use a title company. Due-on-sale clause exists but rarely triggered when payments are current." }
+        ]
+      },
+      { n:17, title:"Wholesale as Exit Strategy", phase:"Exit Strategies",
+        lessons:[
+          { h:"Wholesale Assignment", body:"Get a property under contract at MAO or below, then assign (sell) the contract to a cash buyer for an assignment fee. No license required if you're selling the CONTRACT, not the property. Avg fee: $5K–$20K." },
+          { h:"Building a Buyer List", body:"Facebook REI groups, local REIA meetings, PropStream cash buyer search, BiggerPockets, Driving for Dollars leads who already own investment properties." },
+          { h:"Assignment Formula", body: null, formula:"Assignment Fee = Buyer's Price − Your Contract Price\n$80K buyer price − $65K your contract = $15K assignment fee" }
+        ]
+      },
+      { n:18, title:"Flip Exit Strategy", phase:"Exit Strategies",
+        lessons:[
+          { h:"Fix & Flip", body:"Buy distressed, rehab to retail standard, sell on MLS at full ARV. Quicker than BRRRR but no long-term cash flow. Best for properties that don't produce strong DSCR numbers." },
+          { h:"Flip Profit Formula", body: null, formula:"Flip Profit = ARV − All-In − Closing Costs − Holding Costs\nTarget net: 15–20% of ARV minimum" },
+          { h:"Flip vs. BRRRR Decision", body: null, formula:"If DSCR ≥ 1.20: BRRRR\nIf DSCR < 1.10 or market rent too low: Flip or Wholesale" }
+        ]
+      },
+      { n:19, title:"Rent-to-Own Strategy", phase:"Exit Strategies",
+        lessons:[
+          { h:"Lease-Option / Rent-to-Own", body:"Tenant pays above-market rent with option to purchase within 1–3 years. Option fee (1–3% of ARV) is non-refundable. Strong cash flow. Tenant typically handles repairs. Great for properties in good condition." },
+          { h:"Rent-to-Own Numbers", body: null, formula:"RTO Cash Flow = Above-market rent + Option fee amortized\nExample: $1,500 rent vs $1,300 market = +$200/mo + $3K option fee non-refundable" },
+          { h:"Legal Note", body:"Must use compliant lease-option agreements in Florida. Consult a real estate attorney for proper documentation." }
+        ]
+      },
+      { n:20, title:"CRM Workflow — Tavera Legacy", phase:"Systems",
+        lessons:[
+          { h:"Lead to Close Pipeline", body:"Your CRM at app.taveralegacy.com tracks every lead through the full cycle: Lead → Contacted → Offer Made → Under Contract → Rehabbing → Rented → Refinanced → Portfolio." },
+          { h:"Daily CRM Habits", body:"Log EVERY call in CRM. Set follow-up tasks for every lead. Update lead status after every interaction. Import comps into the Deal Analysis tab. Never let a lead go cold without a follow-up date." },
+          { h:"Pipeline Rule", body: null, formula:"Every lead gets a next action + a date. No orphaned leads. If no action = dead lead = lost money." }
+        ]
+      },
+      { n:21, title:"Week 3 Review — Financing & Exit", phase:"Systems",
+        lessons:[
+          { h:"Decision Tree", body: null, formula:"HML Rate ≈ 12% + 2pts\nPrivate Money ≈ 8–10%\nConventional DSCR Refi ≈ 7–8%\nSub-To: Take over existing rate" },
+          { h:"Exit Strategy Decision", body: null, formula:"DSCR ≥ 1.25 → BRRRR\nStrong ARV margin, weak rent → Flip\nUnder contract below MAO → Wholesale\nGood condition, tenant-ready → Rent-to-Own" }
+        ]
+      }
+    ]
+  },
+  {
+    week: 4, title: "Scaling, Social Media & Mastery",
+    days: [
+      { n:22, title:"Scaling Your Portfolio", phase:"Scale",
+        lessons:[
+          { h:"The Multiplication Effect", body:"1 BRRRR deal per quarter = 4 doors/year. Each deal you recycle capital into the next. By year 3: potentially 12–16 doors producing $3,600–$4,800/mo cash flow." },
+          { h:"Entity Structure", body:"Operate under LLC for liability protection. Consult CPA about Series LLC in Florida. Keep personal and business finances 100% separate — separate bank, separate credit, separate everything." },
+          { h:"Portfolio Goal Formula", body: null, formula:"Monthly Income Goal ÷ Average Cash Flow Per Door = Doors Needed\n$5,500 ÷ $300 = 18 doors to replace income" }
+        ]
+      },
+      { n:23, title:"Building Your Team", phase:"Scale",
+        lessons:[
+          { h:"The Core BRRRR Team", body:"General Contractor (licensed, insured, BRRRR-experienced) · Real Estate Attorney · CPA (investor-focused, knows depreciation/cost seg) · Property Manager (8–10%, well-reviewed) · Hard Money Lender · Title Company" },
+          { h:"Finding Contractors", body:"NEVER hire off Craigslist for full rehabs. Get referrals from other investors. Check Thumbtack/HomeAdvisor for initial vetting. Always get 3 bids. Lien waivers before final payment." },
+          { h:"Key Metric", body: null, formula:"Project management: check-in on job site every 2–3 days minimum. Photos every visit. Track costs weekly." }
+        ]
+      },
+      { n:24, title:"Talking Numbers on Social Media", phase:"Content",
+        lessons:[
+          { h:"The Nate Barger Method", body:"Talk about deals using real numbers. Show the formula on screen. Explain it like you're teaching a student. People follow you for the education AND for proof you actually do this." },
+          { h:"Content Framework", body:"Formula Friday: explain one BRRRR formula (film in CRM or calculator screen). Deal Breakdown: show a REAL deal from ARV to cash flow. Myth Busting: common BRRRR misconceptions." },
+          { h:"Script for TikTok/Reels", body: null, formula:"Hook: 'Here's how I bought a house for $70K and pulled out $80K'\nTeach: Walk through the 3 numbers (ARV, MAO, Refi)\nCTA: 'Save this formula'" }
+        ]
+      },
+      { n:25, title:"Investor Credibility — The Numbers", phase:"Content",
+        lessons:[
+          { h:"Numbers You Must Know Cold", body:"ARV, MAO, All-In %, DSCR, Cash Flow, Cap Rate, Cash-on-Cash, GRM, Equity, LTV, LTC, NOI. You should be able to define all 12 of these from memory without hesitation." },
+          { h:"The Fluency Test", body:"If someone asks: 'What's a good BRRRR deal look like?' — can you answer in under 60 seconds with real numbers? Practice this script every day until it's automatic." },
+          { h:"Template Answer", body: null, formula:"'I target ARV at least $150K, buy at 65–70% ARV minus rehab,\nrefi at 75% LTV to recover capital, and I need at least\n$200/mo cash flow and a 1.25 DSCR minimum.'" }
+        ]
+      },
+      { n:26, title:"Direct Mail & Marketing", phase:"Marketing",
+        lessons:[
+          { h:"Direct Mail Strategy", body:"Target: absentee owners, tax-delinquent properties, probate, high equity / long hold (10+ years). Send 1,000 postcards/month minimum for consistent pipeline. Plan for 0.5–2% response rate." },
+          { h:"The Stack", body:"Mail + SMS text follow-up + cold call = highest conversion. Never mail once. 3–7 touches minimum before marking a lead dead." },
+          { h:"Mail Formula", body: null, formula:"1,000 mailers × 1% response = 10 calls\n10 calls × 20% offer rate = 2 offers\n2 offers × 50% accept = 1 deal\nCost: ~$400–600 per direct mail campaign" }
+        ]
+      },
+      { n:27, title:"Analyzing Live Deals", phase:"Mastery",
+        lessons:[
+          { h:"Live Practice", body:"Pull up Zillow. Filter Polk County for price drops + 90+ DOM. Find 3 properties. Run each through your MAO formula, estimate rehab visually ($500/sqft of distress), project rent from Rentometer." },
+          { h:"Warm-Up Deal", body: null, formula:"Zillow filter: Lakeland 33803, $60K–$100K, 3BR, 90+ DOM, price reduced" },
+          { h:"Decision Rule", body: null, formula:"If MAO > listing price: Call seller / make offer\nIf MAO < listing price by < 10%: Counter and negotiate\nIf listing > MAO by > 15%: Skip. Move on." }
+        ]
+      },
+      { n:28, title:"Your First Deal Checklist", phase:"Mastery",
+        lessons:[
+          { h:"Pre-Offer", body:"ARV confirmed with 3+ comps. Rehab estimate from contractor walk. MAO calculated. Exit strategy decided. Financing lined up (HML or private money committed)." },
+          { h:"Under Contract", body:"Inspection period (14 days). Title search ordered. Property manager meeting (confirm rent and demand). DSCR reconfirmed with final rehab budget. Close only if all numbers still work." },
+          { h:"Post-Refi", body: null, formula:"All-In recovered + positive cash flow = repeat\nDocument everything for your next raise or partner pitch" }
+        ]
+      },
+      { n:29, title:"Income Replacement Timeline", phase:"Mastery",
+        lessons:[
+          { h:"The Math of Freedom", body:"$5,500/mo take-home ÷ $300/door average = 18 doors. At 4 deals/year, that's 4.5 years. Accelerate with larger cash flow per door or faster acquisition pace." },
+          { h:"Year-by-Year", body: null, formula:"Year 1: 4 doors = $1,200/mo CF\nYear 2: 8 doors = $2,400/mo CF\nYear 3: 12 doors = $3,600/mo CF\nYear 4: 16+ doors = $4,800+/mo CF\nYear 5: 18+ doors = Income Replaced" },
+          { h:"Accelerators", body:"Joint ventures, private investors, higher CF markets, short-term rentals on select properties, adding commercial units." }
+        ]
+      },
+      { n:30, title:"Day 30 — You Are Ready", phase:"Mastery",
+        lessons:[
+          { h:"What You Now Know", body:"You can calculate ARV, MAO, DSCR, cash flow, and refi math from memory. You understand every exit strategy. You know your local market. You have a system (CRM, daily habits) in place." },
+          { h:"Your Next 30 Days", body:"Analyze 2 deals per week (use the calculator). Make 1 offer per month minimum. Record your first social media BRRRR breakdown video. Add 5 leads to CRM per week." },
+          { h:"The Legacy Statement", body: null, formula:"'One lead. One property. One timeline. Everything connected.\nThis is how you build generational wealth.\n— Tavera Legacy Investments'" }
+        ]
+      }
+    ]
+  }
+];
+
+// Flatten days
+const DAYS = CURRICULUM.flatMap(w => w.days);
+
+// ─── FLASHCARD DECKS ───────────────────────────────────────
+const DECKS = {
+  formulas: [
+    { q:"What is the MAO formula?", a:"MAO = (ARV × 70%) − Estimated Rehab" },
+    { q:"What does BRRRR stand for?", a:"Buy, Rehab, Rent, Refinance, Repeat" },
+    { q:"What is the 75% rule in BRRRR?", a:"Your all-in cost (purchase + rehab) must be ≤ 75% of ARV to recover capital at refinance" },
+    { q:"How do you calculate DSCR?", a:"DSCR = Gross Monthly Rent ÷ PITIA (Principal + Interest + Taxes + Insurance + Association)" },
+    { q:"What DSCR do most lenders require?", a:"1.20–1.25 minimum. 1.25 preferred (rent is 25% more than mortgage)" },
+    { q:"Cash-Out Refinance formula?", a:"Cash-Out = ARV × 75% LTV. Equity Left = ARV − Cash-Out Amount" },
+    { q:"Cash-on-Cash Return formula?", a:"CoC = (Annual Cash Flow ÷ Cash Invested) × 100%" },
+    { q:"Monthly Cash Flow formula?", a:"CF = Rent − Mortgage − Tax − Insurance − PropMgmt − Vacancy − Repairs" },
+    { q:"ARV stands for?", a:"After Repair Value — what the property is worth AFTER all repairs are complete" },
+    { q:"What does all-in cost mean?", a:"Total capital deployed = Purchase Price + Total Rehab Cost" },
+    { q:"LTV stands for?", a:"Loan-to-Value — loan amount ÷ property value. 75% LTV means bank lends 75% of ARV" },
+    { q:"NOI formula?", a:"NOI = Gross Rent − All Operating Expenses (excludes mortgage payment)" },
+    { q:"Cap Rate formula?", a:"Cap Rate = NOI ÷ Property Value × 100%" },
+    { q:"GRM (Gross Rent Multiplier) formula?", a:"GRM = Property Price ÷ Annual Gross Rent. Lower = better deal (under 8 is strong)" },
+    { q:"Vacancy rate to use in Polk County?", a:"5–7%. Use 6% in model = 0.72 months per year empty" },
+  ],
+  exit: [
+    { q:"When should you choose BRRRR over flip?", a:"When DSCR ≥ 1.25 and rent supports positive cash flow after mortgage" },
+    { q:"When should you wholesale instead of BRRRR?", a:"When you're under contract below MAO but don't have capital/credit for rehab. Assignment fee = quick cash" },
+    { q:"What is a subject-to deal?", a:"You acquire the deed while the seller's existing mortgage stays in their name. You make their payments. Legal in Florida." },
+    { q:"What is seller financing?", a:"Seller acts as the bank. You pay them monthly at agreed rate with no traditional lender needed" },
+    { q:"Assignment fee formula?", a:"Assignment Fee = Your Buyer's Purchase Price − Your Contract Price" },
+    { q:"When is a lease-option (RTO) best?", a:"Property in good condition, strong buyer pool, want above-market rent + option fee income. Tenant handles minor repairs." },
+    { q:"Fix & Flip profit target?", a:"15–20% net profit of ARV minimum after all costs (purchase, rehab, closing, holding)" },
+    { q:"DSCR lender typical requirements?", a:"DSCR ≥ 1.20–1.25, 680+ credit, 20–25% equity/down, no W2 income verification needed" },
+    { q:"Hard money lender typical terms?", a:"10–14% interest rate, 2–4 points, 6–12 month term, lends up to 70% ARV including rehab" },
+    { q:"What seasoning means for DSCR refi?", a:"6–12 months of ownership and rental income documented before most lenders will cash-out refinance" },
+  ],
+  sources: [
+    { q:"Where do you find comparable sales (comps)?", a:"MLS (through your license), Zillow recent sales, Redfin, PropStream, Realtor.com — filter SOLD within 90 days, 0.5 mile radius" },
+    { q:"Where do you verify market rents?", a:"Rentometer.com, Zillow Rent Zestimate, RentRange, local property management companies, Facebook Marketplace rentals" },
+    { q:"Where do you find Polk County probate leads?", a:"polkcountyclerk.net — search probate filings. Also Propstream has probate filter built-in." },
+    { q:"Where do you find tax delinquent properties?", a:"Polk County Tax Collector website. PropStream has built-in tax delinquent filter." },
+    { q:"Where do you find lis pendens / pre-foreclosure?", a:"polkcountyclerk.net → Official Records → search 'Lis Pendens'. PropStream also aggregates this." },
+    { q:"Best app for Driving for Dollars?", a:"DealMachine — lets you tag properties while driving, auto-pull owner data, send direct mail from app" },
+    { q:"What is PropStream used for?", a:"All-in-one investor data: comps, owner info, mortgage amounts, tax data, absentee owners, equity, foreclosures, and direct mail lists" },
+    { q:"Where do you find cash buyers?", a:"Facebook REI groups, local REIA, PropStream cash buyer filter, BiggerPockets marketplace" },
+    { q:"How do you look up code violations?", a:"Polk County Code Enforcement: polkcounty.net — search by address for open violations" },
+    { q:"Where to verify property details (beds/baths/sqft)?", a:"Polk County Property Appraiser: polkpa.org — official property records including tax assessment" },
+  ],
+  terms: [
+    { q:"What is a hard money lender?", a:"Asset-based short-term lender. Lends on ARV, not borrower income. Funds quickly (5–7 days). Used to buy + rehab before refinancing to long-term DSCR loan." },
+    { q:"What is a DSCR loan?", a:"Debt Service Coverage Ratio loan — qualifies based on rental income, not your W2. Perfect for investors with multiple properties." },
+    { q:"What is a first-position lien?", a:"The primary mortgage on a property. Gets paid first in foreclosure. Lenders require first position for security." },
+    { q:"What does price per sqft mean in comps?", a:"Sold price ÷ square footage. Use to compare properties and calculate ARV. Adjust ±$5–10/sqft for condition differences." },
+    { q:"What is an assignment clause?", a:"Contract provision that lets you assign (sell) your rights as buyer to another party. Essential for wholesaling." },
+    { q:"What is a scope of work (SOW)?", a:"Detailed written list of every repair item with costs. Required before any rehab. Get from licensed contractor." },
+    { q:"What is a distressed property?", a:"Property with deferred maintenance, code violations, financial distress (foreclosure/tax liens), or motivated seller in difficult circumstances." },
+    { q:"What is absentee owner?", a:"Property owner who doesn't live at the property. Often more motivated to sell, especially if property is vacant." },
+    { q:"What is equity?", a:"Market Value − Mortgage Balance. In BRRRR: equity captured = the difference between ARV and your all-in cost at acquisition." },
+    { q:"What is seasoning in real estate lending?", a:"Time period of ownership lenders require before allowing cash-out refinance. Typically 6–12 months for DSCR loans." },
+  ]
+};
+
+// ─── QUIZ QUESTIONS ──────────────────────────────────────────
+const QUIZ_QUESTIONS = [
+  { q:"A property has ARV $160,000 and needs $35,000 in repairs. What is the Maximum Allowable Offer (MAO)?", opts:["$77,000","$112,000","$97,000","$84,000"], correct:0, explain:"MAO = (ARV × 70%) − Rehab = ($160K × 0.70) − $35K = $112K − $35K = $77,000" },
+  { q:"Your BRRRR deal: ARV $150K, All-In $108K. Will you recover your capital at a 75% LTV refinance?", opts:["No — all-in exceeds 75% ARV","Yes — refi gives $112,500 to pay off $108K","Depends on rent","Only if DSCR is above 1.0"], correct:1, explain:"75% LTV = $150K × 0.75 = $112,500. All-in was $108K, so you recover $108K and pocket $4,500 above cost. ✅" },
+  { q:"DSCR = 1.10. A lender requires 1.25 minimum. What does this mean?", opts:["Rent is 10% more than mortgage — loan approved","Rent doesn't cover the mortgage by enough — loan likely denied","The property is profitable — proceed","DSCR is irrelevant if ARV is strong"], correct:1, explain:"1.10 means rent is only 10% above PITIA. Most DSCR lenders require 1.20–1.25. This deal would likely not qualify for a DSCR refi as-is." },
+  { q:"You assign a contract: seller agreed to $72K, your buyer pays $88K. What's your assignment fee?", opts:["$72,000","$88,000","$16,000","$8,000"], correct:2, explain:"Assignment Fee = Buyer Price − Your Contract Price = $88K − $72K = $16,000" },
+  { q:"What does the 70% rule protect you from?", opts:["Market appreciation uncertainty","Paying too much and having no equity cushion at refinance","Contractor overruns","Title issues"], correct:1, explain:"The 70% rule ensures your all-in cost leaves a 30% equity buffer below ARV — protecting you at refinance and against market dips." },
+  { q:"Market rent in your area: $1,400/mo. PITIA after DSCR refi: $1,050/mo. What is your DSCR?", opts:["1.33","0.75","1.20","1.10"], correct:0, explain:"DSCR = Rent ÷ PITIA = $1,400 ÷ $1,050 = 1.333. Strong — well above the 1.25 target." },
+  { q:"Monthly rent $1,400. Mortgage $850. Tax+Insurance $200. Property Management (8%) $112. Vacancy (6%) $84. Monthly cash flow is?", opts:["$154","$266","$550","$1,400"], correct:0, explain:"CF = 1400 − 850 − 200 − 112 − 84 = $154/mo. Thin but positive." },
+  { q:"Which exit strategy is BEST when DSCR < 1.10 but ARV margin is strong?", opts:["BRRRR and hold","Wholesale assignment","Fix and flip for retail sale","Subject-to"], correct:2, explain:"Weak DSCR means poor rental income relative to costs — rent can't support the refi mortgage. Strong ARV margin = flip profit. Sell at retail, not hold." },
+  { q:"You pull 3 comps: $142/sqft, $148/sqft, $151/sqft. Subject property: 1,050 sqft. What's your ARV estimate?", opts:["$147,000","$153,825","$158,550","$149,362"], correct:1, explain:"Average comp: ($142 + $148 + $151) ÷ 3 = $147/sqft. ARV = $147 × 1,050 = $154,350. Closest answer: $153,825 (using $146.5/sqft). Always be conservative — use lowest comp if it's the best match." },
+  { q:"How many doors do you need at $300/door average cash flow to replace a $5,400/mo police salary?", opts:["12 doors","18 doors","27 doors","54 doors"], correct:1, explain:"Doors = Income Goal ÷ CF per door = $5,400 ÷ $300 = 18 doors. At 4 deals/year, that's approximately 4.5 years." },
+  { q:"What does 'seasoning' mean in BRRRR financing?", opts:["The rehab quality level","Time you must own property before cash-out refinance","The interest rate on a hard money loan","Condition of comps"], correct:1, explain:"Seasoning = required holding period before a lender allows cash-out refi. Typically 6–12 months for DSCR loans. Plan for this in your deal timeline." },
+  { q:"A property is listed at $89,000. ARV $130K, rehab $22K. What is MAO?", opts:["$91,000","$69,000","$78,600","$108,000"], correct:1, explain:"MAO = (ARV × 70%) − Rehab = ($130K × 0.70) − $22K = $91K − $22K = $69,000. The asking price of $89K is $20K over MAO. This is NOT a deal at list price." },
+];
+
+// ─── SCRIPTS ─────────────────────────────────────────────────
+const SCRIPTS = [
+  {
+    title:"Opening Cold Call — Motivated Seller",
+    body:`<span class="speaker you">YOU:</span> "Hi, is this [Name]? My name is Matthew Tavera with Tavera Legacy Investments here in Lakeland. I noticed your property on [address] has been on the market for a while — I wanted to see if you'd considered a cash offer. Do you have a quick minute?"<br><br>
+<span class="speaker them">THEM:</span> "What kind of offer?"<br><br>
+<span class="speaker you">YOU:</span> "We purchase properties as-is, no repairs, no Realtor commissions, and we can close in as little as 2–3 weeks. I'd just need to ask a few quick questions about the property if that's okay. What's the main reason you're thinking of selling?"`
+  },
+  {
+    title:"Objection: 'Your offer is too low'",
+    body:`<span class="speaker them">THEM:</span> "That offer is way below what I expected."<br><br>
+<span class="speaker you">YOU:</span> "I completely understand, and I appreciate your honesty. I want to be transparent with you — the number I gave you is based on the repairs the property needs, what similar homes are selling for after they're renovated, and what I need to make the investment work. I'm not trying to lowball you — I'm giving you the most I can offer and still make sense of the deal. Can I share my math with you? I'd rather show you the numbers than leave you wondering."`
+  },
+  {
+    title:"Objection: 'I can get more listing with an agent'",
+    body:`<span class="speaker them">THEM:</span> "I think I'll just list it with a Realtor."<br><br>
+<span class="speaker you">YOU:</span> "That's absolutely your right and could be a great option. A few things to consider: listing means repairs, showings, 3–6 months on market, and roughly 6% in commissions plus closing costs — that's often $10–15K off your net even at full price. My offer is as-is, no fees, no repairs, and I close on YOUR timeline. It's just a different kind of transaction. Would you like me to walk through what you'd net both ways?"`
+  },
+  {
+    title:"Objection: 'I need to think about it'",
+    body:`<span class="speaker them">THEM:</span> "I need to think about it."<br><br>
+<span class="speaker you">YOU:</span> "Absolutely, take your time — this is a big decision. Can I ask — is there something specific you're unsure about? I want to make sure you have everything you need to make the right call for yourself. I'll follow up in a few days. What's the best time to check back in with you?"`
+  },
+  {
+    title:"Probate Lead Opening",
+    body:`<span class="speaker you">YOU:</span> "Hi [Name], my name is Matthew Tavera with Tavera Legacy Investments. I'm so sorry for your loss. I specialize in helping families in probate situations — we can often simplify the process by purchasing the property as-is, which removes one item from your plate during a difficult time. There's no obligation at all. Would it be okay if I asked a few questions about the property?"`
+  },
+  {
+    title:"Setting Up a Walk-Through",
+    body:`<span class="speaker you">YOU:</span> "I'd love to see the property in person before I finalize my offer. That way I can give you the most accurate number possible — I want to be fair to you. Could we schedule a quick 20-minute walk this week? I'm flexible on time. Would morning or afternoon work better for you?"`
+  },
+  {
+    title:"BRRRR Investor Pitch (for Private Lenders)",
+    body:`<span class="speaker you">YOU:</span> "I'm acquiring a distressed property, rehabbing it to rental standard, stabilizing it with a tenant, and then refinancing with a conventional lender to pay you back — typically within 6–12 months. You'd be secured by a first-position mortgage on the property. My target is 8–10% annualized return on your investment. The property's ARV will exceed the loan amount by at least 25–30%. Would you be interested in hearing more details on the specific deal?"`
+  },
+];
+
+// ─── RESOURCES ───────────────────────────────────────────────
+const RESOURCES = [
+  { title:"Polk County Property Appraiser", url:"polkpa.org", desc:"Official property records: owner info, beds/baths/sqft, assessment value, sale history. Free.", cat:"🏠 Property Data" },
+  { title:"Polk County Clerk of Courts", url:"polkcountyclerk.net", desc:"Probate filings, lis pendens, official records, mortgage documents. Free public records.", cat:"⚖️ Legal Records" },
+  { title:"Rentometer", url:"rentometer.com", desc:"Market rent analysis by zip code. Get median and percentile rents for comparable units.", cat:"💰 Rent Data" },
+  { title:"PropStream", url:"propstream.com", desc:"All-in-one investor data: comps, owner skip tracing, distress filters, cash buyers, direct mail. ~$99/mo.", cat:"📊 Investor Tools" },
+  { title:"DealMachine", url:"dealmachine.com", desc:"Driving for Dollars app. Tag properties, auto pull owner data, send direct mail from your phone.", cat:"🚗 Lead Gen" },
+  { title:"Zillow", url:"zillow.com", desc:"For comps (recent SOLD), days on market filtering, rent estimates. Filter 90+ DOM for motivated sellers.", cat:"🔍 Search" },
+  { title:"Redfin", url:"redfin.com", desc:"More accurate sold data in many markets. Good for pulling comps with sqft and price-per-sqft data.", cat:"🔍 Search" },
+  { title:"BiggerPockets", url:"biggerpockets.com", desc:"BRRRR forums, deal analysis calculators, finding private lenders and partners, educational content.", cat:"🎓 Education" },
+  { title:"DSCR Loan Lenders (sample)", url:"kiavi.com | corevest.finance | visiolending.com", desc:"No W2 DSCR rental loans for investors. Qualify on property cash flow, not personal income.", cat:"🏦 Financing" },
+  { title:"Hard Money Lenders (FL)", url:"lendingone.com | reedoon.com", desc:"Short-term bridge financing for acquisition + rehab. Rates 10–14%, 2–4 points, fast close.", cat:"🏦 Financing" },
+  { title:"Tavera Legacy CRM", url:"app.taveralegacy.com", desc:"Your full BRRRR operating system — leads, deal analysis, communications, pipeline tracking.", cat:"⚙️ Your Tools" },
+  { title:"Rentometer API + Airdna", url:"airdna.co", desc:"For short-term rental (AirBnB/VRBO) income analysis if considering STR exit strategy on select properties.", cat:"📈 STR Data" },
+];
+
+// ═══════════════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════════════
+let completedDays = new Set();
+let currentDayView = 1;
+let fcDeck = [];
+let fcIdx = 0;
+let fcKnow = 0, fcReview = 0;
+let quizIdx = 0, quizScore = 0, quizAnswered = false;
+let quizQs = [];
+
+try { completedDays = new Set(JSON.parse(localStorage.getItem('tli_completed') || '[]')); } catch(e){}
+
+// ═══════════════════════════════════════════════════════════════════
+//  TAB SWITCHING
+// ═══════════════════════════════════════════════════════════════════
+function switchTab(id) {
+  document.querySelectorAll('.navtab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  const tabs = document.querySelectorAll('.navtab');
+  const map = ['curriculum','flashcards','calculator','quiz','income','scripts','resources','daily'];
+  const idx = map.indexOf(id);
+  if(idx >= 0) tabs[idx].classList.add('active');
+  if(id === 'flashcards' && fcDeck.length === 0) loadDeck();
+  if(id === 'quiz') initQuiz();
+  if(id === 'scripts') renderScripts();
+  if(id === 'resources') renderResources();
+  if(id === 'daily') initDaily();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  CURRICULUM
+// ═══════════════════════════════════════════════════════════════════
+function renderCurriculum() {
+  const grid = document.getElementById('dayGrid');
+  grid.innerHTML = '';
+  DAYS.forEach(d => {
+    const btn = document.createElement('button');
+    btn.className = 'day-btn' + (completedDays.has(d.n) ? ' done' : '') + (d.n === currentDayView ? ' today' : '');
+    btn.innerHTML = `<span>${d.n}</span><span class="d">${d.phase.slice(0,3)}</span>`;
+    btn.onclick = () => showDay(d.n);
+    grid.appendChild(btn);
+  });
+  updateStats();
+  showDay(currentDayView);
+}
+
+function showDay(n) {
+  currentDayView = n;
+  const day = DAYS.find(d => d.n === n);
+  document.getElementById('currentDayLabel').textContent = n;
+  document.querySelectorAll('.day-btn').forEach((b,i) => {
+    b.className = 'day-btn' + (completedDays.has(i+1) ? ' done' : '') + (i+1 === n ? ' today' : '');
+  });
+  let html = `
+    <div><span class="tag tag-phase">${day.phase}</span></div>
+    <h3 style="margin-top:8px">Day ${day.n}: ${day.title}</h3>
+    <div class="meta">Week ${CURRICULUM.findIndex(w => w.days.some(d=>d.n===n))+1} — ${CURRICULUM.find(w=>w.days.some(d=>d.n===n)).title}</div>
+  `;
+  day.lessons.forEach(l => {
+    html += `<div class="lesson-block"><h4>${l.h}</h4>`;
+    if(l.body) html += `<p>${l.body}</p>`;
+    if(l.formula) html += `<div class="formula-box">${l.formula.replace(/\n/g,'<br>')}</div>`;
+    html += `</div>`;
+  });
+  const isDone = completedDays.has(n);
+  html += `<button class="complete-btn ${isDone?'done':''}" id="dayCompleteBtn" onclick="toggleComplete(${n})">${isDone ? '✓ Completed' : 'Mark as Complete'}</button>`;
+  document.getElementById('dayDetail').innerHTML = html;
+}
+
+function toggleComplete(n) {
+  if(completedDays.has(n)) return;
+  completedDays.add(n);
+  try { localStorage.setItem('tli_completed', JSON.stringify([...completedDays])); } catch(e){}
+  renderCurriculum();
+}
+
+function updateStats() {
+  const done = completedDays.size;
+  const rem = 30 - done;
+  let streak = 0;
+  for(let i=1;i<=30;i++) { if(completedDays.has(i)) streak++; else break; }
+  document.getElementById('daysCompleted').textContent = done;
+  document.getElementById('daysRemaining').textContent = rem;
+  document.getElementById('streakCount').textContent = streak;
+  document.getElementById('currProgress').style.width = (done/30*100)+'%';
+  document.getElementById('currPct').textContent = Math.round(done/30*100)+'% complete';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  FLASHCARDS
+// ═══════════════════════════════════════════════════════════════════
+function loadDeck() {
+  const key = document.getElementById('deckSelect').value;
+  fcDeck = [...DECKS[key]].sort(() => Math.random() - 0.5);
+  fcIdx = 0; fcKnow = 0; fcReview = 0;
+  showCard();
+}
+
+function showCard() {
+  if(fcIdx >= fcDeck.length) {
+    document.getElementById('fcQ').textContent = '🎉 Deck Complete!';
+    document.getElementById('fcA').textContent = `${fcKnow}/${fcDeck.length} known. Tap Restart to go again.`;
+    document.getElementById('fcCard').classList.remove('flipped');
+    updateFcScore();
+    return;
+  }
+  const c = fcDeck[fcIdx];
+  document.getElementById('fcQ').textContent = c.q;
+  document.getElementById('fcA').textContent = c.a;
+  document.getElementById('fcCard').classList.remove('flipped');
+  document.getElementById('fcCounter').textContent = `Card ${fcIdx+1} of ${fcDeck.length}`;
+  updateFcScore();
+}
+
+function flipCard() {
+  document.getElementById('fcCard').classList.toggle('flipped');
+}
+
+function markCard(know) {
+  if(know) fcKnow++;
+  else fcReview++;
+  fcIdx++;
+  showCard();
+}
+
+function restartDeck() { loadDeck(); }
+
+function updateFcScore() {
+  document.getElementById('fcKnow').textContent = fcKnow;
+  document.getElementById('fcTotal').textContent = fcIdx;
+  document.getElementById('fcReview').textContent = fcReview;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  CALCULATOR
+// ═══════════════════════════════════════════════════════════════════
+function fmt(n, prefix='$') {
+  if(isNaN(n)) return '—';
+  return prefix + Math.round(n).toLocaleString();
+}
+function fmtPct(n) { return isNaN(n) ? '—' : n.toFixed(1)+'%'; }
+function fmtDscr(n) { return isNaN(n) ? '—' : n.toFixed(2); }
+function colorClass(n, good, warn) { return n >= good ? 'good' : n >= warn ? 'warn' : 'bad'; }
+
+function calcDeal() {
+  const arv   = parseFloat(document.getElementById('c_arv').value)   || 0;
+  const rehab = parseFloat(document.getElementById('c_rehab').value) || 0;
+  const price = parseFloat(document.getElementById('c_price').value) || 0;
+  const rent  = parseFloat(document.getElementById('c_rent').value)  || 0;
+  const rate  = parseFloat(document.getElementById('c_rate').value)  || 0;
+  const term  = parseInt(document.getElementById('c_term').value)    || 30;
+  const exp   = parseFloat(document.getElementById('c_exp').value)   || 0;
+
+  if(!arv) { document.getElementById('calcResults').style.display='none'; return; }
+
+  const mao     = arv * 0.70 - rehab;
+  const allIn   = price + rehab;
+  const allinPct= (allIn / arv) * 100;
+  const refi    = arv * 0.75;
+  const equity  = arv - refi;
+  const returned= refi - allIn;
+
+  let mortgage = 0;
+  if(rate && term && refi) {
+    const r = (rate/100)/12;
+    const n = term*12;
+    mortgage = refi * r * Math.pow(1+r,n) / (Math.pow(1+r,n)-1);
+  }
+
+  const cf   = rent - mortgage - exp;
+  const acf  = cf * 12;
+  const pitia= mortgage + exp;
+  const dscr = pitia > 0 ? rent / pitia : 0;
+
+  document.getElementById('calcResults').style.display='block';
+
+  document.getElementById('r_mao').textContent    = fmt(mao);
+  document.getElementById('r_mao').className      = 'val ' + colorClass(price, mao*1.05, mao);
+
+  document.getElementById('r_allin').textContent  = fmt(allIn);
+  document.getElementById('r_allinpct').textContent = fmtPct(allinPct);
+  document.getElementById('r_allinpct').className = 'val ' + colorClass(100-allinPct, 25, 10);
+
+  document.getElementById('r_refi').textContent   = fmt(refi);
+  document.getElementById('r_equity').textContent = fmt(equity);
+  document.getElementById('r_mortgage').textContent = fmt(mortgage);
+
+  const cfEl = document.getElementById('r_cf');
+  cfEl.textContent = fmt(cf);
+  cfEl.className   = 'val ' + colorClass(cf, 200, 0);
+
+  const acfEl = document.getElementById('r_acf');
+  acfEl.textContent = fmt(acf);
+  acfEl.className   = 'val ' + colorClass(acf, 2400, 0);
+
+  const dscrEl = document.getElementById('r_dscr');
+  dscrEl.textContent = fmtDscr(dscr);
+  dscrEl.className   = 'val ' + colorClass(dscr, 1.25, 1.10);
+
+  const retEl = document.getElementById('r_returned');
+  retEl.textContent = fmt(returned);
+  retEl.className   = 'val ' + colorClass(returned, 0, -5000);
+
+  const v = document.getElementById('r_verdict');
+  const isGood = allinPct <= 75 && cf >= 100 && dscr >= 1.20;
+  const isWarn = allinPct <= 80 && cf >= 0 && dscr >= 1.10;
+  if(isGood) { v.className='verdict pass'; v.textContent='✅ DEAL WORKS — Numbers meet BRRRR criteria'; }
+  else if(isWarn) { v.className='verdict warn'; v.textContent='⚠️ BORDERLINE — Check your exit strategy and negotiate harder'; }
+  else { v.className='verdict fail'; v.textContent='❌ DEAL DOESN\'T WORK — Price is too high or rent too low'; }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  QUIZ
+// ═══════════════════════════════════════════════════════════════════
+function initQuiz() {
+  quizQs = [...QUIZ_QUESTIONS].sort(() => Math.random()-0.5);
+  quizIdx = 0; quizScore = 0; quizAnswered = false;
+  renderQuiz();
+}
+
+function renderQuiz() {
+  const el = document.getElementById('quizArea');
+  if(quizIdx >= quizQs.length) {
+    const pct = Math.round(quizScore/quizQs.length*100);
+    const grade = pct >= 90 ? 'Elite Investor 🏆' : pct >= 75 ? 'Deal Analyst ✅' : pct >= 60 ? 'Keep Studying 📚' : 'Review the Flashcards 🔄';
+    el.innerHTML = `<div class="quiz-score-big">
+      <div class="pct">${pct}%</div>
+      <div class="grade">${quizScore}/${quizQs.length} correct — ${grade}</div>
+    </div>
+    <button class="btn-primary" style="width:100%" onclick="initQuiz()">Retake Quiz</button>`;
+    return;
+  }
+  const q = quizQs[quizIdx];
+  let optsHtml = q.opts.map((o,i) => `<button class="quiz-opt" id="qo${i}" onclick="selectOpt(${i})">${o}</button>`).join('');
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span class="pill pill-blue">Q ${quizIdx+1}/${quizQs.length}</span>
+      <span style="font-size:12px;color:var(--gray-m)">Score: ${quizScore}</span>
+    </div>
+    <div class="progress-bar" style="margin-bottom:14px"><div class="progress-fill" style="width:${(quizIdx/quizQs.length)*100}%"></div></div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts">${optsHtml}</div>
+    <div id="quizExplain" style="display:none"></div>
+    <div class="quiz-nav">
+      <span></span>
+      <button class="btn-primary" id="quizNextBtn" style="display:none" onclick="nextQuestion()">Next →</button>
+    </div>`;
+}
+
+function selectOpt(idx) {
+  if(quizAnswered) return;
+  quizAnswered = true;
+  const q = quizQs[quizIdx];
+  if(idx === q.correct) quizScore++;
+  for(let i=0;i<q.opts.length;i++){
+    const btn = document.getElementById('qo'+i);
+    if(i === q.correct) btn.className = 'quiz-opt correct';
+    else if(i === idx && idx !== q.correct) btn.className = 'quiz-opt wrong';
+  }
+  const expl = document.getElementById('quizExplain');
+  expl.style.display='block';
+  expl.innerHTML=`<div class="quiz-explain"><strong>${idx===q.correct?'✅ Correct!':'❌ Incorrect.'}</strong> ${q.explain}</div>`;
+  document.getElementById('quizNextBtn').style.display='block';
+}
+
+function nextQuestion() { quizIdx++; quizAnswered=false; renderQuiz(); }
+
+// ═══════════════════════════════════════════════════════════════════
+//  INCOME CALCULATOR
+// ═══════════════════════════════════════════════════════════════════
+function calcIncome() {
+  const salary = parseFloat(document.getElementById('ic_salary').value) || 0;
+  const cf     = parseFloat(document.getElementById('ic_cf').value)     || 0;
+  const pace   = parseFloat(document.getElementById('ic_pace').value)   || 3;
+
+  if(!salary || !cf) { document.getElementById('incomeResult').style.display='none'; return; }
+
+  const doors = Math.ceil(salary / cf);
+  const months = doors * pace;
+  const years  = (months/12).toFixed(1);
+  const dealsPerYear = Math.round(12/pace);
+
+  document.getElementById('incomeResult').style.display='block';
+  document.getElementById('ic_doors').textContent = `${doors} doors to replace your income`;
+  document.getElementById('ic_detail').innerHTML = `
+    At $${cf}/door average cash flow, you need <strong style="color:var(--white)">${doors} rental doors</strong> producing <strong style="color:var(--green)">$${(doors*cf).toLocaleString()}/mo</strong> to exceed your $${salary.toLocaleString()}/mo take-home.<br><br>
+    At your pace of ${pace} months per deal (~${dealsPerYear} deals/year), that's approximately <strong style="color:var(--white)">${years} years</strong> to income replacement.
+  `;
+
+  // Timeline
+  let timeline = '';
+  let running = 0;
+  for(let yr=1; yr<=Math.ceil(parseFloat(years)+1) && yr<=10; yr++) {
+    running += dealsPerYear;
+    const monthlyCI = running * cf;
+    const cls = monthlyCI >= salary ? 'pill-green' : 'pill-gray';
+    timeline += `<div class="result-row">
+      <span class="lbl">Year ${yr} (${running} doors)</span>
+      <span><span class="pill ${cls}">$${monthlyCI.toLocaleString()}/mo</span></span>
+    </div>`;
+    if(monthlyCI >= salary) { timeline += `<div style="font-size:12px;color:var(--green);text-align:center;padding:8px;font-weight:700">🎯 INCOME REPLACED — Year ${yr}</div>`; break; }
+  }
+  document.getElementById('ic_timeline').innerHTML = timeline;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  SCRIPTS
+// ═══════════════════════════════════════════════════════════════════
+function renderScripts() {
+  const el = document.getElementById('scriptsArea');
+  if(el.innerHTML) return;
+  el.innerHTML = SCRIPTS.map((s,i) => `
+    <div class="script-block">
+      <div class="script-header" id="sh${i}" onclick="toggleScript(${i})">
+        <h4>${s.title}</h4>
+        <span class="arr">▼</span>
+      </div>
+      <div class="script-body" id="sb${i}">${s.body}</div>
+    </div>`).join('');
+  // Open first
+  toggleScript(0);
+}
+
+function toggleScript(i) {
+  const h = document.getElementById('sh'+i);
+  const b = document.getElementById('sb'+i);
+  const isOpen = b.classList.contains('open');
+  document.querySelectorAll('.script-header').forEach(x=>x.classList.remove('open'));
+  document.querySelectorAll('.script-body').forEach(x=>x.classList.remove('open'));
+  if(!isOpen) { h.classList.add('open'); b.classList.add('open'); }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  RESOURCES
+// ═══════════════════════════════════════════════════════════════════
+function renderResources() {
+  const el = document.getElementById('resourcesArea');
+  if(el.innerHTML) return;
+  const cats = [...new Set(RESOURCES.map(r=>r.cat))];
+  el.innerHTML = cats.map(cat => {
+    const items = RESOURCES.filter(r=>r.cat===cat);
+    return `<div class="section-label" style="margin-top:14px">${cat}</div>` +
+      items.map(r => `<div class="resource-item">
+        <div class="title">${r.title}</div>
+        <div class="url">${r.url}</div>
+        <div class="desc">${r.desc}</div>
+      </div>`).join('');
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  DAILY SHEET
+// ═══════════════════════════════════════════════════════════════════
+const STUDY_TASKS = [
+  "Review today's curriculum lesson (15 min)",
+  "Write out 3 BRRRR formulas from memory",
+  "Do 10 flashcards in the app",
+  "Listen to a BRRRR podcast / YouTube video",
+];
+const PROSPECT_TASKS = [
+  "Search Zillow for 90+ DOM properties in target zip",
+  "Drive a target neighborhood (DealMachine)",
+  "Check PropStream for new distressed properties",
+  "Send 5 outreach texts/emails to leads",
+  "Pull 2 comps for a potential deal",
+];
+const FOLLOW_TASKS = [
+  "Call back any warm leads from previous days",
+  "Update CRM with all contact notes",
+  "Set next follow-up date for every lead",
+  "Check voicemail and return missed calls",
+];
+const DEAL_TASKS = [
+  "Run MAO on 1 property",
+  "Verify ARV with sold comps",
+  "Check market rent on Rentometer",
+  "Run full BRRRR calculator on best lead",
+];
+
+function initDaily() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('sheetDate').value = today;
+  renderChecks('studyChecks', STUDY_TASKS, 'study');
+  renderChecks('prospectChecks', PROSPECT_TASKS, 'prospect');
+  renderChecks('followChecks', FOLLOW_TASKS, 'follow');
+  renderChecks('dealChecks', DEAL_TASKS, 'deal');
+  loadDailyData(today);
+}
+
+function renderChecks(containerId, tasks, prefix) {
+  const el = document.getElementById(containerId);
+  if(el.innerHTML) return;
+  el.innerHTML = tasks.map((t,i) => `
+    <div class="checkbox-row">
+      <div class="cb" id="cb_${prefix}_${i}" onclick="toggleCheck('${prefix}',${i})"></div>
+      <span class="cb-label">${t}</span>
+    </div>`).join('');
+}
+
+function toggleCheck(prefix, i) {
+  const cb = document.getElementById(`cb_${prefix}_${i}`);
+  cb.classList.toggle('checked');
+}
+
+function saveDaily() {
+  const date = document.getElementById('sheetDate').value;
+  const notes = document.getElementById('dailyNotes').value;
+  const formula = document.getElementById('formulaOfDay').value;
+  try {
+    localStorage.setItem('tli_daily_'+date, JSON.stringify({notes, formula, ts: Date.now()}));
+    document.querySelector('.btn-primary').textContent = '✓ Saved!';
+    setTimeout(() => document.querySelector('.btn-primary').textContent = 'Save Today\'s Sheet', 2000);
+  } catch(e) {}
+}
+
+function loadDailyData(date) {
+  try {
+    const d = JSON.parse(localStorage.getItem('tli_daily_'+date) || '{}');
+    if(d.notes) document.getElementById('dailyNotes').value = d.notes;
+    if(d.formula) document.getElementById('formulaOfDay').value = d.formula;
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════════════
+renderCurriculum();
+</script>
