@@ -1,3 +1,16 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BRRRR">
+<meta name="theme-color" content="#121212">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
 <title>BRRRR Mastery</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
 <style>
@@ -288,7 +301,88 @@ input[type=range] { width: 100%; accent-color: var(--green); margin: 4px 0; curs
   .fc-card-wrap { height: 200px; }
   .row { flex-direction: column; }
 }
+
+/* ══ iPHONE LAYER ══ */
+#tab-curriculum .row { flex-direction: row !important; gap: 8px; }
+#tab-curriculum .stat-box { padding: 10px 6px; }
+#tab-curriculum .stat-box .num { font-size: 24px; }
+html, body { height: auto; min-height: 100%; -webkit-text-size-adjust: 100%; }
+body { display: block; font-size: 16px; -webkit-tap-highlight-color: transparent; }
+button, input, textarea, select { font-family: inherit; }
+input, textarea, select, .calc-input, .notes-area { font-size: 16px !important; } /* stops iOS zoom-on-focus */
+
+.topbar { position: sticky; top: 0; padding: calc(10px + env(safe-area-inset-top)) 16px 10px; }
+
+/* Bottom tab bar */
+.navtabs {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 200;
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  border-top: 1px solid var(--border); border-bottom: none;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: rgba(26,26,26,.96); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  overflow: visible;
+}
+.navtab {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  min-height: 56px; padding: 6px 2px; font-size: 11px; font-weight: 600; border-bottom: none;
+}
+.navtab .ic { font-size: 22px; line-height: 1; filter: grayscale(1) opacity(.7); }
+.navtab.active { color: var(--green); }
+.navtab.active .ic { filter: none; }
+
+.content { overflow: visible; padding: 16px 16px calc(84px + env(safe-area-inset-bottom)); }
+
+/* More sheet */
+.sheet-bg { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 300; display: none; }
+.sheet-bg.open { display: block; }
+.sheet {
+  position: absolute; left: 0; right: 0; bottom: 0; background: var(--panel);
+  border-radius: 18px 18px 0 0; border-top: 1px solid var(--border);
+  padding: 8px 16px calc(16px + env(safe-area-inset-bottom));
+}
+.sheet .grab { width: 40px; height: 5px; border-radius: 3px; background: var(--gray-d); margin: 4px auto 12px; }
+.sheet button {
+  width: 100%; display: flex; align-items: center; gap: 14px; text-align: left;
+  min-height: 56px; padding: 0 14px; margin-bottom: 8px; border-radius: 12px;
+  background: var(--card); border: 1px solid var(--border); color: var(--white);
+  font-size: 17px; font-weight: 600;
+}
+.sheet button .ic { font-size: 22px; width: 28px; text-align: center; }
+
+/* Compact day picker */
+.day-grid { grid-template-columns: repeat(6, 1fr) !important; gap: 6px !important; }
+.day-btn { aspect-ratio: auto; height: 46px; font-size: 16px !important; border-radius: 10px; }
+.day-btn .d { display: none; }
+
+/* Readable type */
+h2 { font-size: 22px; } h3 { font-size: 18px; }
+.section-label { font-size: 12px; }
+.pill, .tag { font-size: 12px; }
+.day-detail { padding: 18px; }
+.day-detail h3 { font-size: 20px; }
+.day-detail .meta { font-size: 14px; }
+.lesson-block h4 { font-size: 17px; }
+.lesson-block p, .lesson-block li { font-size: 16px; line-height: 1.65; }
+.formula-box { font-size: 15px; line-height: 1.6; overflow-x: auto; }
+.complete-btn, .quiz-next, .fc-btn { min-height: 50px; font-size: 16px; border-radius: 12px; }
+.fc-q { font-size: 18px; } .fc-a { font-size: 17px; } .fc-label { font-size: 12px; } .fc-hint { font-size: 13px; }
+.fc-counter { font-size: 14px; }
+.calc-label { font-size: 12px; }
+.calc-input { min-height: 46px; }
+.result-row .lbl { font-size: 15px; } .result-row .val { font-size: 16px; }
+.quiz-q { font-size: 19px; }
+.quiz-opt { font-size: 16px; min-height: 52px; }
+.quiz-explain { font-size: 15px; }
+.income-result .detail { font-size: 15px; }
+.resource-item .title { font-size: 16px; } .resource-item .url { font-size: 14px; } .resource-item .desc { font-size: 15px; }
+.script-header { min-height: 52px; } .script-header h4 { font-size: 16px; }
+.script-body { font-size: 16px; }
+.cb-label { font-size: 16px; }
+.cb { width: 24px !important; height: 24px !important; }
+.stat-box .lbl { font-size: 11px; }
 </style>
+</head>
+<body>
 
 <!-- TOP BAR -->
 <div class="topbar">
@@ -304,15 +398,21 @@ input[type=range] { width: 100%; accent-color: var(--green); margin: 4px 0; curs
 
 <!-- NAV TABS -->
 <nav class="navtabs">
-  <button class="navtab active" onclick="switchTab('curriculum')">📅 Curriculum</button>
-  <button class="navtab" onclick="switchTab('flashcards')">🃏 Flashcards</button>
-  <button class="navtab" onclick="switchTab('calculator')">🧮 Deal Calc</button>
-  <button class="navtab" onclick="switchTab('quiz')">✅ Quiz</button>
-  <button class="navtab" onclick="switchTab('income')">💰 Income Calc</button>
-  <button class="navtab" onclick="switchTab('scripts')">📞 Scripts</button>
-  <button class="navtab" onclick="switchTab('resources')">🗂 Resources</button>
-  <button class="navtab" onclick="switchTab('daily')">📋 Daily Sheet</button>
+  <button class="navtab active" data-tab="curriculum" onclick="switchTab('curriculum')"><span class="ic">📅</span>Learn</button>
+  <button class="navtab" data-tab="flashcards" onclick="switchTab('flashcards')"><span class="ic">🃏</span>Cards</button>
+  <button class="navtab" data-tab="calculator" onclick="switchTab('calculator')"><span class="ic">🧮</span>Deal Calc</button>
+  <button class="navtab" data-tab="quiz" onclick="switchTab('quiz')"><span class="ic">✅</span>Quiz</button>
+  <button class="navtab" data-tab="more" onclick="openMore()"><span class="ic">☰</span>More</button>
 </nav>
+<div class="sheet-bg" id="moreSheet" onclick="if(event.target===this)closeMore()">
+  <div class="sheet">
+    <div class="grab"></div>
+    <button onclick="switchTab('income')"><span class="ic">💰</span>Income Calculator</button>
+    <button onclick="switchTab('scripts')"><span class="ic">📞</span>Call Scripts</button>
+    <button onclick="switchTab('resources')"><span class="ic">🗂</span>Resources</button>
+    <button onclick="switchTab('daily')"><span class="ic">📋</span>Daily Sheet</button>
+  </div>
+</div>
 
 <!-- ══════════════════════════════════════════════════════
      TAB: CURRICULUM
@@ -925,14 +1025,16 @@ try { completedDays = new Set(JSON.parse(localStorage.getItem('tli_completed') |
 // ═══════════════════════════════════════════════════════════════════
 //  TAB SWITCHING
 // ═══════════════════════════════════════════════════════════════════
+function openMore(){ document.getElementById('moreSheet').classList.add('open'); }
+function closeMore(){ const m=document.getElementById('moreSheet'); if(m) m.classList.remove('open'); }
 function switchTab(id) {
-  document.querySelectorAll('.navtab').forEach(t => t.classList.remove('active'));
+  closeMore();
   document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
   document.getElementById('tab-'+id).classList.add('active');
-  const tabs = document.querySelectorAll('.navtab');
-  const map = ['curriculum','flashcards','calculator','quiz','income','scripts','resources','daily'];
-  const idx = map.indexOf(id);
-  if(idx >= 0) tabs[idx].classList.add('active');
+  const main = ['curriculum','flashcards','calculator','quiz'];
+  const key = main.includes(id) ? id : 'more';
+  document.querySelectorAll('.navtab').forEach(t => t.classList.toggle('active', t.dataset.tab === key));
+  window.scrollTo(0,0);
   if(id === 'flashcards' && fcDeck.length === 0) loadDeck();
   if(id === 'quiz') initQuiz();
   if(id === 'scripts') renderScripts();
@@ -1339,3 +1441,5 @@ function loadDailyData(date) {
 // ═══════════════════════════════════════════════════════════════════
 renderCurriculum();
 </script>
+</body>
+</html>
