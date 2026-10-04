@@ -70,7 +70,7 @@ BIBLE.register({
       "blocks": [
         {
           "h": "Notices and security deposits",
-          "p": "Florida's Residential Landlord and Tenant Act is Part II of Chapter 83. Section 83.56 sets out the notices. For nonpayment of rent you serve a 3-day notice demanding the rent or possession. The 3 days exclude Saturdays, Sundays, and legal holidays, so a notice served on a Friday before a Monday holiday does not run out until Thursday. For a breach the tenant can fix, such as an unauthorized pet or a trashed yard, you serve a 7-day notice to cure that says the lease ends if the problem is not corrected within 7 days. For a breach that cannot be cured, such as intentional destruction of the property or a repeat of a violation you already warned about within 12 months, you serve a 7-day unconditional notice to vacate. Use the statutory wording. A defective notice is the most common reason a Florida eviction gets dismissed and restarted. You must hold deposits in a separate Florida account, either non-interest-bearing, or interest-bearing where the tenant gets at least 75 percent of the interest or 5 percent simple interest, or you post a surety bond. Do not commingle deposit money with your operating cash. Landlords who rent 5 or more units must give written notice within 30 days of receiving the deposit saying where it is held and whether it earns interest. When the tenant moves out, you have 15 days to return the deposit if you make no claim. If you intend to keep any of it, you must send a claim notice by certified mail to the tenant's last known address within 30 days of move-out, using the statutory wording. The tenant then has 15 days to object. Miss the 30-day claim window and you forfeit the right to keep any of the deposit, though you can still sue separately for damages."
+          "p": "Florida's Residential Landlord and Tenant Act is Part II of Chapter 83. Section 83.56 sets out the notices. For nonpayment of rent you serve a 3-day notice demanding the rent or possession. The 3 days exclude Saturdays, Sundays, and legal holidays, so a notice served on a Friday before a Monday holiday does not run out until Thursday. For a breach the tenant can fix, such as an unauthorized pet or a trashed yard, you serve a 7-day notice to cure that says the lease ends if the problem is not corrected within 7 days. For a breach that cannot be cured, such as intentional destruction of the property or a repeat of a violation you already warned about within 12 months, you serve a 7-day unconditional notice to vacate. Use the statutory wording. A defective notice is the most common reason a Florida eviction gets dismissed and restarted. You must hold deposits in a separate Florida account, either non-interest-bearing, or interest-bearing where the tenant gets at least 75 percent of the interest or 5 percent simple interest, or you post a surety bond. Do not commingle deposit money with your operating cash. Landlords who rent 5 or more units must give written notice within 30 days of receiving the deposit saying where it is held and whether it earns interest. When the tenant moves out, you have 15 days to return the deposit if you make no claim. If you intend to keep any of it, you must send a claim notice by certified mail to the tenant's last known address (or, since a 2025 amendment, by email if the tenant agreed to electronic notices under F.S. 83.505) within 30 days of move-out, using the statutory wording. The tenant then has 15 days to object. Miss the 30-day claim window and you forfeit the right to keep any of the deposit, though you can still sue separately for damages."
         },
         {
           "h": "Entry, month-to-month, preemption, fee-in-lieu, and the eviction timeline",
@@ -84,7 +84,7 @@ BIBLE.register({
         },
         {
           "state": {
-            "fl": "Deposit claim notice within 30 days by certified mail; tenant objects within 15 days. Local tenant ordinances are preempted by state law since July 1, 2023.",
+            "fl": "Deposit claim notice within 30 days by certified mail (or email if the tenant consented under 83.505); tenant objects within 15 days. Local tenant ordinances are preempted by state law since July 1, 2023.",
             "oh": "Deposit and itemized deductions must be returned within 30 days, with interest owed on large deposits held 6 months or more. See the Ohio module."
           }
         },
@@ -336,7 +336,7 @@ BIBLE.register({
         },
         {
           "h": "If you hold a license, and the legislative picture",
-          "p": "A licensee who buys or wholesales for their own account must still follow Chapter 475 and the Florida Real Estate Commission rules. Disclose in writing that you are a licensee acting as a principal, disclose your intent to resell or assign for profit, and never give the seller the impression you are representing their interests. Run personal deals through your broker if your brokerage requires it, and do not use your brokerage's name on wholesale marketing. Your license makes the Commission's disciplinary reach apply to your own deals. Several states have passed wholesaler disclosure or licensing laws since 2024, including Ohio. In Florida, a 2024 bill, House Bill 1009, was filed to regulate wholesaling but did not advance, and as of October 2026 no Florida statute specific to wholesaling has been enacted. Chapter 475 remains the governing law. Check for new bills each session (verify locally)."
+          "p": "A licensee who buys or wholesales for their own account must still follow Chapter 475 and the Florida Real Estate Commission rules. Disclose in writing that you are a licensee acting as a principal, disclose your intent to resell or assign for profit, and never give the seller the impression you are representing their interests. Run personal deals through your broker if your brokerage requires it, and do not use your brokerage's name on wholesale marketing. Your license makes the Commission's disciplinary reach apply to your own deals. Several states have passed wholesaler disclosure or licensing laws since 2024, including Ohio. In Florida, as of October 2026, no Florida statute specific to wholesaling has been enacted. Chapter 475 remains the governing law. Check for new bills each session (verify locally)."
         },
         {
           "carry": "Assigning your own signed contract is principal activity. Marketing a house you do not own is brokerage. No Florida wholesaling statute has passed as of October 2026."
@@ -361,7 +361,7 @@ BIBLE.register({
               "u": "https://www.leg.state.fl.us/statutes/index.cfm?App_mode=Display_Statute&URL=0400-0499/0475/Sections/0475.011.html"
             },
             {
-              "t": "Deal Run: Florida wholesaling compliance (Chapter 475, HB 1009 status)",
+              "t": "Deal Run: Florida wholesaling compliance (Chapter 475)",
               "u": "https://dealrun.ai/compliance/florida"
             },
             {
@@ -601,7 +601,7 @@ BIBLE.register({
       "id": "fl-c11",
       "type": "number",
       "q": "Florida security deposit return deadlines?",
-      "a": "15 days to return the deposit if you make no claim; 30 days to send a claim notice by certified mail if you do. The tenant then has 15 days to object. F.S. 83.49."
+      "a": "15 days to return the deposit if you make no claim; 30 days to send a claim notice by certified mail (or email, if the tenant consented under 83.505) if you do. The tenant then has 15 days to object. F.S. 83.49."
     },
     {
       "id": "fl-c12",
@@ -799,7 +799,7 @@ BIBLE.register({
       "id": "fl-c44",
       "type": "state",
       "q": "Does the state have a wholesaler disclosure statute?",
-      "a": "FL: No; a 2024 bill (HB 1009) did not advance and Chapter 475 licensing law controls as of October 2026. | OH: Yes; ORC 5301.95 requires a signed, bold, 12-point disclosure before contract, effective March 2, 2026."
+      "a": "FL: No; no wholesaling-specific bill has been enacted and Chapter 475 licensing law controls as of October 2026. | OH: Yes; ORC 5301.95 requires a signed, bold, 12-point disclosure before contract, effective March 2, 2026."
     },
     {
       "id": "fl-c45",
@@ -945,7 +945,7 @@ BIBLE.register({
         "30 days, by certified mail"
       ],
       "correct": 3,
-      "explain": "F.S. 83.49(3) requires a certified-mail claim notice within 30 days; miss it and you forfeit the claim."
+      "explain": "F.S. 83.49(3) requires a claim notice by certified mail (or by email only if the tenant agreed to electronic notice under 83.505) within 30 days; miss it and you forfeit the claim."
     },
     {
       "id": "fl-q05",
@@ -1085,7 +1085,7 @@ BIBLE.register({
       "opts": [
         "Enacted in 2024",
         "Enacted in 2025 with a disclosure form",
-        "A 2024 bill (HB 1009) did not advance and nothing has been enacted",
+        "No wholesaling-specific statute has been enacted",
         "Wholesaling is banned"
       ],
       "correct": 2,

@@ -1,5 +1,5 @@
 // The Wealth Bible service worker: offline cache, stale-while-revalidate
-const V="wb-2026.10.04-1";
+const V="wb-2026.10.04-2";
 const FILES=["./", "index.html", "app.js", "manifest.json", "icon-180.png", "icon-192.png", "icon-512.png", "content/extras.js", "content/fl.js", "content/m01.js", "content/m02.js", "content/m03.js", "content/m04.js", "content/m05.js", "content/m06.js", "content/m07.js", "content/m08.js", "content/m09.js", "content/m10.js", "content/m11.js", "content/m12.js", "content/m13.js", "content/m14.js", "content/m15.js", "content/m16.js", "content/oh.js"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(FILES)));});
 self.addEventListener("message",e=>{if(e.data==="skip")self.skipWaiting();});
